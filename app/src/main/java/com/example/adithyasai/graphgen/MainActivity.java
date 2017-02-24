@@ -1,12 +1,19 @@
 package com.example.adithyasai.graphgen;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -20,7 +27,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
     final Handler graphHandler = new Handler();
     Thread t;
     boolean flag=false;
@@ -34,11 +41,17 @@ public class MainActivity extends AppCompatActivity {
     RadioGroup genderField;
     RadioButton genderSelected;
     Button submit;
-
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    private double ax,ay,az;
+    private long timestamp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         idField=(EditText) findViewById(R.id.id);
         patientNameField=(EditText) findViewById(R.id.patientName);
         ageField=(EditText) findViewById(R.id.age);
@@ -145,33 +158,71 @@ public class MainActivity extends AppCompatActivity {
         });
         t.start();
     }
-//Gautham's Changes beginning
-    static final float NS2S = 1.0f / 1000000000.0f;
-    float[] last_values = null;
-    float[] velocity = null;
-    float[] position = null;
-    long last_timestamp = 0;
 
-    public void onSensorChanged(SensorEvent event){
-        if(last_values != null){
-            float dt = (event.timestamp - last_timestamp) * NS2S;
-
-            for(int index = 0; index < 3;++index){
-                velocity[index] += (event.values[index] + last_values[index])/2 * dt;
-                position[index] += velocity[index] * dt;
-            }
-        }
-        else{
-            last_values = new float[3];
-            velocity = new float[3];
-            position = new float[3];
-            velocity[0] = velocity[1] = velocity[2] = 0f;
-            position[0] = position[1] = position[2] = 0f;
-        }
-        System.arraycopy(event.values, 0, last_values, 0, 3);
-        last_timestamp = event.timestamp;
+    @Override
+    public void onAccuracyChanged(Sensor arg0, int arg1) {
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Display mDisplay = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
+            return;
+
+        switch (mDisplay.getRotation()) {
+            case Surface.ROTATION_0:
+                ax = event.values[0];
+                ay = event.values[1];
+                break;
+            case Surface.ROTATION_90:
+                ax = -event.values[1];
+                ay = event.values[0];
+                break;
+            case Surface.ROTATION_180:
+                ax = -event.values[0];
+                ay = -event.values[1];
+                break;
+            case Surface.ROTATION_270:
+                ax = event.values[1];
+                ay = -event.values[0];
+                break;
+        }
+        az = event.values[2];
+        timestamp = event.timestamp;
+        Toast.makeText(this, Double.toString(ax)+"\n"+Double.toString(ay)+"\n"+Double.toString(az)+"\n"+Double.toString(timestamp), Toast.LENGTH_LONG).show();
+    }
+
+
+////Gautham's Changes beginning
+//    static final float NS2S = 1.0f / 1000000000.0f;
+//    float[] last_values = null;
+//    float[] velocity = null;
+//    float[] position = null;
+//    long last_timestamp = 0;
+//
+//    public void onSensorChanged(SensorEvent event){
+//        if(last_values != null){
+//            float dt = (event.timestamp - last_timestamp) * NS2S;
+//
+//            for(int index = 0; index < 3;++index){
+//                velocity[index] += (event.values[index] + last_values[index])/2 * dt;
+//                position[index] += velocity[index] * dt;
+//            }
+//        }
+//        else{
+//            last_values = new float[3];
+//            velocity = new float[3];
+//            position = new float[3];
+//            velocity[0] = velocity[1] = velocity[2] = 0f;
+//            position[0] = position[1] = position[2] = 0f;
+//        }
+//        System.arraycopy(event.values, 0, last_values, 0, 3);
+//        last_timestamp = event.timestamp;
+//    }
 //Gautham's changes ending
+
+
+
     public void getFormValues(View v){
 //        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
         String id=idField.getText().toString();
