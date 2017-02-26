@@ -12,7 +12,7 @@ import java.util.*;
  */
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION=1;
+    private static final int DATABASE_VERSION=2;
     private static final String DATABASE_NAME="Group28";
     private static final String DATABASE_TABLE="Name_ID_Age_Sex";
     private static final String KEY_ID="timestamp";
@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(COORDINATE1,ar.getX());
         values.put(COORDINATE2,ar.getY());
         values.put(COORDINATE3,ar.getZ());
-        db.insert(DATABASE_TABLE,null,values);
+        db.insert(tablename,null,values);
     }
 
 //    public List<AccelorometerReading> getReadings(){

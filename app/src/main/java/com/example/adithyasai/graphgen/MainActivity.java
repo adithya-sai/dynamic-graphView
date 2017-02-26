@@ -1,5 +1,6 @@
 package com.example.adithyasai.graphgen;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -58,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ageField=(EditText) findViewById(R.id.age);
         genderField=(RadioGroup) findViewById(R.id.gender);
         submit=(Button) findViewById(R.id.submit);
-
+        db=new DatabaseHandler(this);
+        sqldb=db.getWritableDatabase();
         for (int i = 0; i < 12; i++) {
             Random r = new Random();
             val[i] = r.nextFloat();
@@ -190,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         az = event.values[2];
         timestamp = event.timestamp;
-        Toast.makeText(this, Double.toString(ax)+"\n"+Double.toString(ay)+"\n"+Double.toString(az)+"\n"+Double.toString(timestamp), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, Double.toString(ax)+"\n"+Double.toString(ay)+"\n"+Double.toString(az)+"\n"+Double.toString(timestamp), Toast.LENGTH_LONG).show();
     }
 
 
@@ -240,26 +242,76 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
             Integer.parseInt(id);
             Integer.parseInt(age);
+            boolean fl=true;
+            try{
+                Integer.parseInt(name.charAt(0)+"");
+                fl=false;
+            }catch (Exception e){
+                fl=true;
+            }
+            if(fl==true)
+                createTable(id,name,age,gender);
+            else
+                Toast.makeText(this, "Wrong input", Toast.LENGTH_LONG).show();
             Toast.makeText(this, id+name+age+gender, Toast.LENGTH_LONG).show();
             createTable(id,name,age,gender);
             t1=new Thread(new Runnable(){
                 public void run(){
-                              AccelorometerReading ar=new AccelorometerReading(Long.toString(timestamp),ax,ay,az);
-                              db.addCoordinates(ar,tableName);
+
+                              AccelorometerReading ar;
+                                try{
+                                while(true){
+                                    Long tsLong = System.currentTimeMillis()/1000;
+                                    String ts = tsLong.toString();
+                                    ar=new AccelorometerReading(ts,ax,ay,az);
+                                    addCoordinates(ar,tableName);
+                                    Thread.sleep(1000);
+                                }}catch (InterruptedException e){
+
+                                }
                 }
             });
         t1.start();
-        t1.wait(1000);
+        //t1.wait(1000);
         }catch(InputMismatchException ime){
         Toast.makeText(this,"Wrong input",Toast.LENGTH_LONG).show();
-        }catch (InterruptedException ie){
+        }/*catch (InterruptedException ie){
 
+        }/*
+        boolean fl=true;
+        try{
+            Integer.parseInt(name.charAt(0)+"");
+            fl=false;
+        }catch (Exception e){
+            fl=true;
         }
+        if(fl==true)
+            createTable(id,name,age,gender);
+        else
+            Toast.makeText(this, "Wrong input", Toast.LENGTH_LONG).show();*/
     }
+
     String tableName;
+    DatabaseHandler db;
+    SQLiteDatabase sqldb;
+    public void addCoordinates(AccelorometerReading ar, String  tablename){
+        //db =new DatabaseHandler(this);
+        sqldb=db.getWritableDatabase();
+        ContentValues values=new ContentValues();
+        final String KEY_ID="timestamp";
+        final String COORDINATE1="X";
+        final String COORDINATE2="Y";
+        final String COORDINATE3="Z";
+        values.put(KEY_ID,ar.getTimestamp());
+        values.put(COORDINATE1,ar.getX());
+        values.put(COORDINATE2,ar.getY());
+        values.put(COORDINATE3,ar.getZ());
+        sqldb.insert(tablename,null,values);
+    }
+
     public void createTable(String id, String name,String age,String gender){
-        DatabaseHandler db =new DatabaseHandler(this);
-        SQLiteDatabase sqldb=db.getWritableDatabase();
+
+        sqldb=db.getWritableDatabase();
         tableName=name+'_'+id+'_'+age+'_'+gender;
         sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,x float,y float,z float)");
         sqldb.close();
