@@ -25,11 +25,12 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.InputMismatchException;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     final Handler graphHandler = new Handler();
-    Thread t;
+    Thread t,t1;
     boolean flag=false;
     LineGraphSeries<DataPoint> series;
     final float[] val = new float[50];
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //    }
 //Gautham's changes ending
 
-
+//Added Input validaiton and thread to insert into DB.
 
     public void getFormValues(View v){
 //        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
@@ -231,18 +232,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int selectedRadio=genderField.getCheckedRadioButtonId();
         genderSelected=(RadioButton) findViewById(selectedRadio);
         String gender=genderSelected.getText().toString();
-        Toast.makeText(this, id+name+age+gender, Toast.LENGTH_LONG).show();
-        createTable(id,name,age,gender);
+        final DatabaseHandler db =new DatabaseHandler(this);
+        SQLiteDatabase sqldb=db.getWritableDatabase();
+        try{
+            if(id.isEmpty()==true || name.isEmpty()==true || age.isEmpty()==true || gender.isEmpty()==true){
+                throw new InputMismatchException();
+            }
+            Integer.parseInt(id);
+            Integer.parseInt(age);
+            Toast.makeText(this, id+name+age+gender, Toast.LENGTH_LONG).show();
+            createTable(id,name,age,gender);
+            t1=new Thread(new Runnable(){
+                public void run(){
+                              AccelorometerReading ar=new AccelorometerReading(Long.toString(timestamp),ax,ay,az);
+                              db.addCoordinates(ar,tableName);
+                }
+            });
+        t1.start();
+        t1.wait(1000);
+        }catch(InputMismatchException ime){
+        Toast.makeText(this,"Wrong input",Toast.LENGTH_LONG).show();
+        }catch (InterruptedException ie){
+
+        }
     }
+    String tableName;
     public void createTable(String id, String name,String age,String gender){
         DatabaseHandler db =new DatabaseHandler(this);
         SQLiteDatabase sqldb=db.getWritableDatabase();
-        String tableName=name+'_'+id+'_'+age+'_'+gender;
+        tableName=name+'_'+id+'_'+age+'_'+gender;
         sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,x float,y float,z float)");
         sqldb.close();
     }
-
-
 
 }
 
