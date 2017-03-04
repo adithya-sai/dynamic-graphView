@@ -2,6 +2,7 @@ package com.example.adithyasai.graphgen;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -47,10 +48,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor sensor;
     private double ax,ay,az;
     private long timestamp;
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context=this;
         sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -147,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         val[3] = temp;
                         graph.addSeries(series);
                     }
+                    String result=getTop10();
+                    Toast.makeText(context,result,Toast.LENGTH_LONG).show();
                 }
                 else if (flag==false){
                     for(int i=0;i<10;i++){
@@ -225,7 +230,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //Gautham's changes ending
 
 //Added Input validaiton and thread to insert into DB.
-
+    public String getTop10(){
+        sqldb=db.getReadableDatabase();
+        String query="SELECT * FROM "+tableName+" order by timestamp desc LIMIT 10";
+        String[] columns=new String[]{"timestamp","x","y","z"};
+        Cursor cursor=sqldb.query(tableName,columns,null,null,null,null,"timestamp desc","10");
+        String result="";
+        int index_CONTENT=cursor.getColumnIndex("timestamp");
+        for(cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()){
+            result = result + cursor.getString(index_CONTENT) + "\n";
+        }
+        return result;
+    }
     public void getFormValues(View v){
 //        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
         String id=idField.getText().toString();
