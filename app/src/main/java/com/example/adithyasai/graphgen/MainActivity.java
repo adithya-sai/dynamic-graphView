@@ -144,14 +144,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         count=true;
                     } else {
                         float temp = val[0];
-                        for (int i = 0; i < 4; i++) {
-                            val[i] = val[i + 1];
+                            for (int i = 0; i < 4; i++) {
+                                val[i] = val[i + 1];
                         }
                         val[3] = temp;
                         graph.addSeries(series);
                     }
-                    String result=getTop10();
-                    Toast.makeText(context,result,Toast.LENGTH_LONG).show();
+                    String result="";
+                    if(tableName.isEmpty()==false){
+                         result=getTop10();
+                         Toast.makeText(context,result,Toast.LENGTH_LONG).show();
+
+                        }
                 }
                 else if (flag==false){
                     for(int i=0;i<10;i++){
@@ -236,9 +240,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String[] columns=new String[]{"timestamp","x","y","z"};
         Cursor cursor=sqldb.query(tableName,columns,null,null,null,null,"timestamp desc","10");
         String result="";
-        int index_CONTENT=cursor.getColumnIndex("timestamp");
-        for(cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()){
-            result = result + cursor.getString(index_CONTENT) + "\n";
+        int timestamp_CONTENT=cursor.getColumnIndex("timestamp");
+        int x_CONTENT=cursor.getColumnIndex("x");
+        int y_CONTENT=cursor.getColumnIndex("y");
+        int z_CONTENT=cursor.getColumnIndex("z");
+        for(cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()) {
+            result = result + cursor.getString(timestamp_CONTENT) + " " + cursor.getString(x_CONTENT) + " " + cursor.getString(y_CONTENT) + " " + cursor.getString(z_CONTENT) + "\n";
+            System.out.println(cursor.getString(timestamp_CONTENT));
         }
         return result;
     }
@@ -307,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Toast.makeText(this, "Wrong input", Toast.LENGTH_LONG).show();*/
     }
 
-    String tableName;
+    String tableName=new String();
     DatabaseHandler db;
     SQLiteDatabase sqldb;
     public void addCoordinates(AccelorometerReading ar, String  tablename){
