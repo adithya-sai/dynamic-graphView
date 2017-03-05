@@ -80,9 +80,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         DatabaseHandler db =new DatabaseHandler(this);
         SQLiteDatabase sqldb=db.getWritableDatabase();
 
-        random_val[1]+=8700;
-        random_val[2]+=1500;
-        random_val[3]+=19000;
+//        random_val[1]+=8700;
+//        random_val[2]+=1500;
+//        random_val[3]+=19000;
         Button button = (Button) findViewById(R.id.start);
         button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
@@ -114,58 +114,77 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void run() {
 
                 graph.removeAllSeries();
-
-                series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                        new DataPoint(2600, val[0]),
-                        new DataPoint(2650, val[1]),
-                        new DataPoint(2700, val[2]),
-                        new DataPoint(2750, val[3]),
-                        new DataPoint(2800, val[0]),
-                        new DataPoint(2850, val[1]),
-                        new DataPoint(2900, val[2]),
-                        new DataPoint(2950, val[3]),
-                        new DataPoint(3000, val[0]),
-                        new DataPoint(3050, val[1]),
-                        new DataPoint(3100, val[2]),
-                        new DataPoint(3150, val[3]),
-                        new DataPoint(3200, val[0]),
-                        new DataPoint(3250, val[1]),
-                        new DataPoint(3300, val[2]),
-                        new DataPoint(3350, val[3]),
-                        new DataPoint(3400, val[0])
-                });
-                series.setColor(Color.RED);
-                graph.addSeries(series);
+//
+//                series = new LineGraphSeries<DataPoint>(new DataPoint[]{
+//                        new DataPoint(2600, val[0]),
+//                        new DataPoint(2650, val[1]),
+//                        new DataPoint(2700, val[2]),
+//                        new DataPoint(2750, val[3]),
+//                        new DataPoint(2800, val[0]),
+//                        new DataPoint(2850, val[1]),
+//                        new DataPoint(2900, val[2]),
+//                        new DataPoint(2950, val[3]),
+//                        new DataPoint(3000, val[0]),
+//                        new DataPoint(3050, val[1]),
+//                        new DataPoint(3100, val[2]),
+//                        new DataPoint(3150, val[3]),
+//                        new DataPoint(3200, val[0]),
+//                        new DataPoint(3250, val[1]),
+//                        new DataPoint(3300, val[2]),
+//                        new DataPoint(3350, val[3]),
+//                        new DataPoint(3400, val[0])
+//                });
+//                series.setColor(Color.RED);
+                //graph.addSeries(series);
                 if(flag==true) {
-                    if (count == false) {
-                        for (int i = 0; i < 4; i++) {
-                            val[i] = random_val[i];
-                        }
-                        count=true;
-                    } else {
-                        float temp = val[0];
-                            for (int i = 0; i < 4; i++) {
-                                val[i] = val[i + 1];
-                        }
-                        val[3] = temp;
-                        graph.addSeries(series);
-                    }
                     String result="";
                     if(tableName.isEmpty()==false){
                          result=getTop10();
-                         Toast.makeText(context,result,Toast.LENGTH_LONG).show();
+                         //Toast.makeText(context,result,Toast.LENGTH_LONG).show();
+                        String[] data = result.split("\n");
+                        if(data.length==10){
+                        DataPoint[] dp = new DataPoint[10];
+                        int ct=0;
+                        for(String i: data){
 
+                            String[] temp=i.split(" ");
+                            //System.out.println(temp[1]+" "+temp[2]);
+                            int j=0;
+                            if(ct%3==0)
+                                j=-1;
+                            else if(ct%3==1)
+                                j=2;
+                            else
+                                j=5;
+                            dp[ct]=new DataPoint(Double.parseDouble(temp[1]),Double.parseDouble(temp[2]));
+                            ct++;
                         }
+
+                        series = new LineGraphSeries<DataPoint>(dp);
+                        graph.addSeries(series);
+                        graph.getViewport().setXAxisBoundsManual(true);
+                        graph.getViewport().setMaxX(10);
+                        graph.getViewport().setMinX(-10);
+
+                        graph.getViewport().setYAxisBoundsManual(true);
+                        graph.getViewport().setMaxY(10);
+                        graph.getViewport().setMinY(-10);
+                        }}
                 }
                 else if (flag==false){
                     for(int i=0;i<10;i++){
                         val[i]=0;
                     }
                     graph.removeAllSeries();
+                    graph.getViewport().setXAxisBoundsManual(true);
+                    graph.getViewport().setMaxX(10);
+                    graph.getViewport().setMinX(-10);
+
+                    graph.getViewport().setYAxisBoundsManual(true);
+                    graph.getViewport().setMaxY(10);
+                    graph.getViewport().setMinY(-10);
                 }
-
-
-                graphHandler.postDelayed(this, 600);
+                graphHandler.postDelayed(this, 1000);
             }
         });
         t.start();
@@ -246,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int z_CONTENT=cursor.getColumnIndex("z");
         for(cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()) {
             result = result + cursor.getString(timestamp_CONTENT) + " " + cursor.getString(x_CONTENT) + " " + cursor.getString(y_CONTENT) + " " + cursor.getString(z_CONTENT) + "\n";
-            System.out.println(cursor.getString(timestamp_CONTENT));
+            //System.out.println(cursor.getString(timestamp_CONTENT));
         }
         return result;
     }
