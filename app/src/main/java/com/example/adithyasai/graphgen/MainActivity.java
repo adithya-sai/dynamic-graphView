@@ -27,6 +27,8 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.Random;
 
@@ -143,32 +145,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                          //Toast.makeText(context,result,Toast.LENGTH_LONG).show();
                         String[] data = result.split("\n");
                         if(data.length==10){
-                        DataPoint[] dp = new DataPoint[10];
+                        DataPoint[] dpx = new DataPoint[10];
+                        DataPoint[] dpy = new DataPoint[10];
+                        DataPoint[] dpz = new DataPoint[10];
                         int ct=0;
-                        for(String i: data){
-
+                        for(int j=9;j>=0;j-- ){
+                            String i=data[j];
                             String[] temp=i.split(" ");
-                            //System.out.println(temp[1]+" "+temp[2]);
-                            int j=0;
-                            if(ct%3==0)
-                                j=-1;
-                            else if(ct%3==1)
-                                j=2;
-                            else
-                                j=5;
-                            dp[ct]=new DataPoint(Double.parseDouble(temp[1]),Double.parseDouble(temp[2]));
+                            System.out.println(temp[0]+" "+temp[1]);
+                            dpx[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[1]));
+                            dpy[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[2]));
+                            dpz[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[3]));
                             ct++;
                         }
 
-                        series = new LineGraphSeries<DataPoint>(dp);
+                        series = new LineGraphSeries<DataPoint>(dpx);
+                        series.setColor(Color.BLUE);
+                        graph.addSeries(series);
+                        series = new LineGraphSeries<DataPoint>(dpy);
+                        series.setColor(Color.RED);
+                        graph.addSeries(series);
+                        series = new LineGraphSeries<DataPoint>(dpz);
+                        series.setColor(Color.GREEN);
                         graph.addSeries(series);
                         graph.getViewport().setXAxisBoundsManual(true);
-                        graph.getViewport().setMaxX(10);
-                        graph.getViewport().setMinX(-10);
+                        Long min=Long.parseLong(data[9].split(" ")[0]);
+                        Long max=Long.parseLong(data[0].split(" ")[0]);
+                        System.out.println("Min: "+min+" Max: "+max);
+                        graph.getViewport().setMaxX(max);
+                        graph.getViewport().setMinX(min);
 
-                        graph.getViewport().setYAxisBoundsManual(true);
-                        graph.getViewport().setMaxY(10);
-                        graph.getViewport().setMinY(-10);
+                        //graph.getViewport().setYAxisBoundsManual(true);
+                        //graph.getViewport().setMaxY(10);
+                        //graph.getViewport().setMinY(-10);
                         }}
                 }
                 else if (flag==false){
