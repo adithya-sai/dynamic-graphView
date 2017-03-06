@@ -51,11 +51,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private double ax,ay,az;
     private long timestamp;
     Context context;
+    DatabaseHandler db = null;
+    SQLiteDatabase sqldb =null;
+    String tableName = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context=this;
+        db = new DatabaseHandler(context);
         sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -64,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ageField=(EditText) findViewById(R.id.age);
         genderField=(RadioGroup) findViewById(R.id.gender);
         submit=(Button) findViewById(R.id.submit);
-        db=new DatabaseHandler(this);
         sqldb=db.getWritableDatabase();
         for (int i = 0; i < 12; i++) {
             Random r = new Random();
@@ -74,17 +78,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Random r = new Random();
             random_val[i] = r.nextFloat();
         }
-//        Long tsLong = System.currentTimeMillis()/1000;
-//        String ts = tsLong.toString();
-//        AccelorometerReading ar=new AccelorometerReading(ts,5,4,2);
-//        db.addCoordinates(ar);
-//        //this.deleteDatabase("Name_ID_Age_Sex");
-        DatabaseHandler db =new DatabaseHandler(this);
-        SQLiteDatabase sqldb=db.getWritableDatabase();
-
-//        random_val[1]+=8700;
-//        random_val[2]+=1500;
-//        random_val[3]+=19000;
         Button button = (Button) findViewById(R.id.start);
         button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
@@ -99,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     count=false;
                 }catch(Exception e)
                 {
+
                 }
                 GraphView layout = (GraphView) findViewById(R.id.graph);
                 layout.removeAllSeries();
@@ -116,28 +110,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void run() {
 
                 graph.removeAllSeries();
-//
-//                series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-//                        new DataPoint(2600, val[0]),
-//                        new DataPoint(2650, val[1]),
-//                        new DataPoint(2700, val[2]),
-//                        new DataPoint(2750, val[3]),
-//                        new DataPoint(2800, val[0]),
-//                        new DataPoint(2850, val[1]),
-//                        new DataPoint(2900, val[2]),
-//                        new DataPoint(2950, val[3]),
-//                        new DataPoint(3000, val[0]),
-//                        new DataPoint(3050, val[1]),
-//                        new DataPoint(3100, val[2]),
-//                        new DataPoint(3150, val[3]),
-//                        new DataPoint(3200, val[0]),
-//                        new DataPoint(3250, val[1]),
-//                        new DataPoint(3300, val[2]),
-//                        new DataPoint(3350, val[3]),
-//                        new DataPoint(3400, val[0])
-//                });
-//                series.setColor(Color.RED);
-                //graph.addSeries(series);
                 if(flag==true) {
                     String result="";
                     if(tableName.isEmpty()==false){
@@ -175,9 +147,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         graph.getViewport().setMaxX(max);
                         graph.getViewport().setMinX(min);
 
-                        //graph.getViewport().setYAxisBoundsManual(true);
-                        //graph.getViewport().setMaxY(10);
-                        //graph.getViewport().setMinY(-10);
                         }}
                 }
                 else if (flag==false){
@@ -231,35 +200,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         timestamp = event.timestamp;
         //Toast.makeText(this, Double.toString(ax)+"\n"+Double.toString(ay)+"\n"+Double.toString(az)+"\n"+Double.toString(timestamp), Toast.LENGTH_LONG).show();
     }
-
-
-////Gautham's Changes beginning
-//    static final float NS2S = 1.0f / 1000000000.0f;
-//    float[] last_values = null;
-//    float[] velocity = null;
-//    float[] position = null;
-//    long last_timestamp = 0;
-//
-//    public void onSensorChanged(SensorEvent event){
-//        if(last_values != null){
-//            float dt = (event.timestamp - last_timestamp) * NS2S;
-//
-//            for(int index = 0; index < 3;++index){
-//                velocity[index] += (event.values[index] + last_values[index])/2 * dt;
-//                position[index] += velocity[index] * dt;
-//            }
-//        }
-//        else{
-//            last_values = new float[3];
-//            velocity = new float[3];
-//            position = new float[3];
-//            velocity[0] = velocity[1] = velocity[2] = 0f;
-//            position[0] = position[1] = position[2] = 0f;
-//        }
-//        System.arraycopy(event.values, 0, last_values, 0, 3);
-//        last_timestamp = event.timestamp;
-//    }
-//Gautham's changes ending
 
 //Added Input validaiton and thread to insert into DB.
     public String getTop10(){
@@ -316,7 +256,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     Long tsLong = System.currentTimeMillis()/1000;
                                     String ts = tsLong.toString();
                                     ar=new AccelorometerReading(ts,ax,ay,az);
-                                    addCoordinates(ar,tableName);
+                                    db.addCoordinates(ar,tableName);
+//                                    addCoordinates(ar,tableName);
                                     Thread.sleep(1000);
                                 }}catch (InterruptedException e){
 
@@ -327,38 +268,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //t1.wait(1000);
         }catch(InputMismatchException ime){
         Toast.makeText(this,"Wrong input",Toast.LENGTH_LONG).show();
-        }/*catch (InterruptedException ie){
-
-        }/*
-        boolean fl=true;
-        try{
-            Integer.parseInt(name.charAt(0)+"");
-            fl=false;
-        }catch (Exception e){
-            fl=true;
         }
-        if(fl==true)
-            createTable(id,name,age,gender);
-        else
-            Toast.makeText(this, "Wrong input", Toast.LENGTH_LONG).show();*/
-    }
-
-    String tableName=new String();
-    DatabaseHandler db;
-    SQLiteDatabase sqldb;
-    public void addCoordinates(AccelorometerReading ar, String  tablename){
-        //db =new DatabaseHandler(this);
-        sqldb=db.getWritableDatabase();
-        ContentValues values=new ContentValues();
-        final String KEY_ID="timestamp";
-        final String COORDINATE1="X";
-        final String COORDINATE2="Y";
-        final String COORDINATE3="Z";
-        values.put(KEY_ID,ar.getTimestamp());
-        values.put(COORDINATE1,ar.getX());
-        values.put(COORDINATE2,ar.getY());
-        values.put(COORDINATE3,ar.getZ());
-        sqldb.insert(tablename,null,values);
     }
 
     public void createTable(String id, String name,String age,String gender){
