@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Context context;
     DatabaseHandler db = null;
     SQLiteDatabase sqldb =null;
-    String tableName = null;
+    String tableName = new String();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         final GraphView graph=(GraphView) findViewById(R.id.graph);
         graph.setTitle("Heartbeat");
         graph.removeAllSeries();
-        t = new Thread(new Runnable() {
+        //if(tableName.isEmpty()==false){
+            t = new Thread(new Runnable() {
             @Override
             public void run() {
 
@@ -165,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 graphHandler.postDelayed(this, 1000);
             }
         });
-        t.start();
-    }
+        t.start();}
+    //}
 
     @Override
     public void onAccuracyChanged(Sensor arg0, int arg1) {
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int selectedRadio=genderField.getCheckedRadioButtonId();
         genderSelected=(RadioButton) findViewById(selectedRadio);
         String gender=genderSelected.getText().toString();
-        final DatabaseHandler db =new DatabaseHandler(this);
+        //final DatabaseHandler db =new DatabaseHandler(this);
         SQLiteDatabase sqldb=db.getWritableDatabase();
         try{
             if(id.isEmpty()==true || name.isEmpty()==true || age.isEmpty()==true || gender.isEmpty()==true){
@@ -276,7 +277,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sqldb=db.getWritableDatabase();
         tableName=name+'_'+id+'_'+age+'_'+gender;
         sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,x float,y float,z float)");
-        sqldb.close();
+        //sqldb.close();
+    }
+
+    public void uploadDatabase(View view){
+        String[] s= new String[1];
+        APIOperations op=new APIOperations(this);
+        op.execute(s);
+        //op.pushDatabaseToServer();
+    }
+
+    public void downloadDatabase(View view){
+        String[] s=new String[1];
+        DownloadOperation dop=new DownloadOperation(this);
+        dop.execute(s);
     }
 
 }
