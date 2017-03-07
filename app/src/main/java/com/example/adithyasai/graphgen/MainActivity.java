@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         patientNameField=(EditText) findViewById(R.id.patientName);
         ageField=(EditText) findViewById(R.id.age);
         genderField=(RadioGroup) findViewById(R.id.gender);
-        submit=(Button) findViewById(R.id.submit);
         sqldb=db.getWritableDatabase();
         for (int i = 0; i < 12; i++) {
             Random r = new Random();
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button button = (Button) findViewById(R.id.start);
         button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
+                    getFormValues(v);
                     flag=true;
             }
         });
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onResume() {
         super.onResume();
         final GraphView graph=(GraphView) findViewById(R.id.graph);
-        graph.setTitle("Heartbeat");
+        graph.setTitle("X axis : Timestamp Y axis: Axes of accelerometer");
         graph.removeAllSeries();
             t = new Thread(new Runnable() {
             @Override
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 createTable(id,name,age,gender);
             else
                 Toast.makeText(this, "Wrong input", Toast.LENGTH_LONG).show();
-            Toast.makeText(this, id+name+age+gender, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, name+'_'+id+'_'+age+'_'+gender, Toast.LENGTH_LONG).show();
             createTable(id,name,age,gender);
             t1=new Thread(new Runnable(){
                 public void run(){
@@ -251,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     String ts = tsLong.toString();
                                     ar=new AccelorometerReading(ts,ax,ay,az);
                                     db.addCoordinates(ar,tableName);
-//                                    addCoordinates(ar,tableName);
                                     Thread.sleep(1000);
                                 }}catch (InterruptedException e){
 

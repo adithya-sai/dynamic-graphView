@@ -95,14 +95,7 @@
         android:layout_alignBottom="@+id/stop"
         android:layout_toEndOf="@+id/patientName" />
 
-    <Button
-        android:text="Submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/age"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/submit"
-        android:onClick="getFormValues"/>
+
 
 </RelativeLayout>
 

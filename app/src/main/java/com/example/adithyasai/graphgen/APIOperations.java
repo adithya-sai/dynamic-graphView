@@ -20,9 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.*;
 import javax.xml.transform.Result;
 
-/**
- * Created by p4nd0r45b0x on 3/5/17.
- */
+
 
 public class APIOperations extends AsyncTask<String,Integer,String> {
 
