@@ -5,12 +5,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,6 +18,7 @@ import java.security.cert.*;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.*;
+import javax.xml.transform.Result;
 
 /**
  * Created by p4nd0r45b0x on 3/5/17.
@@ -39,13 +34,9 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
 
     @Override
     protected String doInBackground(String... s) {
-        return this.pushDatabaseToServer();
 
-    }
-
-    public String pushDatabaseToServer() {
         String surl = "https://impact.asu.edu/CSE535Spring17Folder/UploadToServer.php";
-        String sfile = "/data/data/com.example.adithyasai.graphgen/databases/Group28";
+        String source_file_loc = "/data/data/com.example.adithyasai.graphgen/databases/Group28";
 
         try {
             HttpsURLConnection connection = null;
@@ -89,20 +80,18 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
             }
             try {
 
-                String source_file_loc = "/data/data/com.example.natarajan.assaignment1/databases/patients_natarajan.db";
                 sourceFile = new File(source_file_loc);
                 fileInputStream = new FileInputStream(sourceFile);
                 URL url = new URL(surl);
                 connection = (HttpsURLConnection) url.openConnection();
 
-                connection.setDoInput(true); // Allow Inputs
-                connection.setDoOutput(true); // Allow Outputs
-                connection.setUseCaches(false); // Don't use a Cached Copy
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setUseCaches(false);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Connection", "Keep-Alive");
                 connection.setRequestProperty("ENCTYPE", "multipart/form-data");
                 connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                connection.setRequestProperty("uploaded_file", source_file_loc);
 
                 dos = new DataOutputStream(connection.getOutputStream());
 
@@ -137,6 +126,9 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
                 serverResponseCode = connection.getResponseCode();
                 if (serverResponseCode != 200) {
                     return "server returned: " + connection.getResponseCode() + " message: " + connection.getResponseMessage();
+                } else {
+                    System.out.print("\n\n\n\n\n\nRESPONSE CODE: "+serverResponseCode);
+                    System.out.println("RESPONSE MESSAGE: "+connection.getResponseMessage());
                 }
 
             } catch (Exception e) {
@@ -158,6 +150,8 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
         }
         return null;
     }
+
+
 
     @Override
     protected void onPreExecute() {

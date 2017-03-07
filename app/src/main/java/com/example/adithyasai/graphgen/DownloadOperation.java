@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -45,8 +46,6 @@ public class DownloadOperation extends AsyncTask<String, Integer, String> {
 
         String surl = "https://impact.asu.edu/CSE535Spring17Folder/Group28";
 
-
-        //searchButton = (Button) findViewById(R.id.button1);
         InputStream input = null;
         OutputStream output = null;
         HttpsURLConnection connection = null;
@@ -57,12 +56,10 @@ public class DownloadOperation extends AsyncTask<String, Integer, String> {
 
             @Override
             public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                // Not implemented
             }
 
             @Override
             public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                // Not implemented
             }
         } };
 
@@ -82,30 +79,25 @@ public class DownloadOperation extends AsyncTask<String, Integer, String> {
             connection = (HttpsURLConnection) url.openConnection();
             connection.connect();
 
-            // expect HTTP 200 OK, so we don't mistakenly save error report
-            // instead of the file
+
             if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
                 return "Server returned HTTP " + connection.getResponseCode()
                         + " " + connection.getResponseMessage();
             }
 
-            // this will be useful to display download percentage
-            // might be -1: server did not report the length
             int fileLength = connection.getContentLength();
 
-            //downloadButton.setText(Integer.toString(fileLength));
-            // download the file
+
 
             input = connection.getInputStream();
             File dbFile = new File("/data/data/com.example.adithyasai.graphgen/databases/Group28");
-            output = new FileOutputStream(dbFile);
+            output = new FileOutputStream(dbFile,false);
 
-            //downloadButton.setText("Connecting .....");
             byte data[] = new byte[4096];
             long total = 0;
             int count;
             while ((count = input.read(data)) != -1) {
-                // allow canceling with back button
+
 
                 total += count;
 
@@ -145,15 +137,11 @@ public class DownloadOperation extends AsyncTask<String, Integer, String> {
 
     @Override
     protected void onPostExecute(String result) {
-//        RadioButton rb3 = (RadioButton) findViewById(R.id.female_button);
-//        RadioButton rb4 = (RadioButton) findViewById(R.id.male_button);
-//        rb3.setSelected(false);
-//        rb4.setSelected(false);
         if (result != null){
             Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
 
         }else{
-            Toast.makeText(context,"File downloaded; Select patient details to start graph with downloaded data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"Downloaded db from web server", Toast.LENGTH_SHORT).show();
         }
     }
 }

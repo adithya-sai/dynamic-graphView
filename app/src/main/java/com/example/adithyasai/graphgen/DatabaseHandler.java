@@ -22,6 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addCoordinates(AccelorometerReading ar, String  tablename){
         SQLiteDatabase db=this.getWritableDatabase();
+
         ContentValues values=new ContentValues();
         values.put(KEY_ID,ar.getTimestamp());
         values.put(COORDINATE1,ar.getX());
@@ -30,10 +31,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(tablename,null,values);
     }
 
-//    public List<AccelorometerReading> getReadings(){
-//        List<AccelorometerReading> ar = new ArrayList<AccelorometerReading>();
-//    }
-
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -41,19 +38,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-//        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + DATABASE_TABLE + "("
-//                + KEY_ID + " TIMESTAMP PRIMARY KEY," + COORDINATE1 + " TEXT,"
-//                + COORDINATE2+ " TEXT, "+ COORDINATE3+ " TEXT)";
-//        db.execSQL(CREATE_CONTACTS_TABLE);
+
     }
 
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        // Drop older table if existed
-//        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
-//
-//        // Create tables again
-//        onCreate(db);
+
     }
 }

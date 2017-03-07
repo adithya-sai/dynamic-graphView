@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         final GraphView graph=(GraphView) findViewById(R.id.graph);
         graph.setTitle("Heartbeat");
         graph.removeAllSeries();
-        //if(tableName.isEmpty()==false){
             t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         for(int j=9;j>=0;j-- ){
                             String i=data[j];
                             String[] temp=i.split(" ");
-                            System.out.println(temp[0]+" "+temp[1]);
                             dpx[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[1]));
                             dpy[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[2]));
                             dpz[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[3]));
@@ -144,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         graph.getViewport().setXAxisBoundsManual(true);
                         Long min=Long.parseLong(data[9].split(" ")[0]);
                         Long max=Long.parseLong(data[0].split(" ")[0]);
-                        System.out.println("Min: "+min+" Max: "+max);
                         graph.getViewport().setMaxX(max);
                         graph.getViewport().setMinX(min);
 
@@ -199,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         az = event.values[2];
         timestamp = event.timestamp;
-        //Toast.makeText(this, Double.toString(ax)+"\n"+Double.toString(ay)+"\n"+Double.toString(az)+"\n"+Double.toString(timestamp), Toast.LENGTH_LONG).show();
     }
 
 //Added Input validaiton and thread to insert into DB.
@@ -214,20 +210,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int y_CONTENT=cursor.getColumnIndex("y");
         int z_CONTENT=cursor.getColumnIndex("z");
         for(cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()) {
-            result = result + cursor.getString(timestamp_CONTENT) + " " + cursor.getString(x_CONTENT) + " " + cursor.getString(y_CONTENT) + " " + cursor.getString(z_CONTENT) + "\n";
-            //System.out.println(cursor.getString(timestamp_CONTENT));
+        result = result + cursor.getString(timestamp_CONTENT) + " " + cursor.getString(x_CONTENT) + " " + cursor.getString(y_CONTENT) + " " + cursor.getString(z_CONTENT) + "\n";
         }
         return result;
     }
     public void getFormValues(View v){
-//        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
         String id=idField.getText().toString();
         String name=patientNameField.getText().toString();
         String age=ageField.getText().toString();
         int selectedRadio=genderField.getCheckedRadioButtonId();
         genderSelected=(RadioButton) findViewById(selectedRadio);
         String gender=genderSelected.getText().toString();
-        //final DatabaseHandler db =new DatabaseHandler(this);
         SQLiteDatabase sqldb=db.getWritableDatabase();
         try{
             if(id.isEmpty()==true || name.isEmpty()==true || age.isEmpty()==true || gender.isEmpty()==true){
@@ -266,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             });
         t1.start();
-        //t1.wait(1000);
         }catch(InputMismatchException ime){
         Toast.makeText(this,"Wrong input",Toast.LENGTH_LONG).show();
         }
@@ -277,14 +269,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sqldb=db.getWritableDatabase();
         tableName=name+'_'+id+'_'+age+'_'+gender;
         sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,x float,y float,z float)");
-        //sqldb.close();
     }
 
     public void uploadDatabase(View view){
         String[] s= new String[1];
         APIOperations op=new APIOperations(this);
         op.execute(s);
-        //op.pushDatabaseToServer();
     }
 
     public void downloadDatabase(View view){
