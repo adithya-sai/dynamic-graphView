@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
                     getFormValues(v);
-                    flag=true;
+                    flag=false;
             }
         });
         Button stop = (Button) findViewById(R.id.stop);
@@ -249,9 +249,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 while(true){
                                     Long tsLong = System.currentTimeMillis()/1000;
                                     String ts = tsLong.toString();
-                                    ar=new AccelorometerReading(ts,ax,ay,az);
-                                    db.addCoordinates(ar,tableName);
-                                    Thread.sleep(1000);
+                                    double[] acc_reading = new double[150];
+                                    for(int i=0;i<150;i+=3)
+                                    {
+                                        acc_reading[i]=ax;
+                                        acc_reading[i+1]=ay;
+                                        acc_reading[i+2]=az;
+                                        Thread.sleep(100);
+                                    }
+                                    //ar=new AccelorometerReading(ts,ax,ay,az);
+                                    db.addCoordinates(ts+","+Arrays.toString(acc_reading).replace("[","").replace("]",""),tableName);
+
                                 }}catch (InterruptedException e){
 
                                 }
@@ -267,7 +275,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         sqldb=db.getWritableDatabase();
         tableName=name+'_'+id+'_'+age+'_'+gender;
-        sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,x float,y float,z float)");
+        String st= new String();
+        for(int i=0;i<50;i++)
+            {
+            if(i!=49)
+                st+="x"+(i+1)+" float"+", y"+(i+1)+" float"+", z"+(i+1)+" float, ";
+            else
+                st+="x"+(i+1)+" float"+", y"+(i+1)+" float"+", z"+(i+1)+" float";
+            }
+        System.out.println(st);
+        sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,"+st+")");
     }
 
     public void uploadDatabase(View view){

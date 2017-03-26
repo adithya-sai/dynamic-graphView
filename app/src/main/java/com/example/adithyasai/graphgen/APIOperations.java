@@ -34,11 +34,11 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
     protected String doInBackground(String... s) {
 
         String surl = "https://impact.asu.edu/CSE535Spring17Folder/UploadToServer.php";
-        String source_file_loc = "/data/data/com.example.adithyasai.graphgen/databases/Group28";
+        String sfile = "/data/data/com.example.adithyasai.graphgen/databases/Group28";
 
         try {
-            HttpsURLConnection connection = null;
-            DataOutputStream dos = null;
+            HttpsURLConnection conn = null;
+            DataOutputStream dataOutputStream = null;
             FileInputStream fileInputStream = null;
             File sourceFile = null;
             String lineEnd = "\r\n";
@@ -46,9 +46,9 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
             String boundary = "*****";
             int bytesRead, bytesAvailable, bufferSize;
             byte[] buffer;
-            int maxBufferSize = 1 * 1024 * 1024;
+            int maxBufferSize = 1048576;
             int serverResponseCode = 0;
-
+            //Source:- http://stackoverflow.com/questions/7443235/getting-java-to-accept-all-certs-over-https
             TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                 public X509Certificate[] getAcceptedIssuers() {
                     return null;
@@ -77,26 +77,26 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
                 e.printStackTrace();
             }
             try {
-
-                sourceFile = new File(source_file_loc);
+                //Source:-http://androidexample.com/Upload_File_To_Server_-_Android_Example/index.php?view=article_discription&aid=83
+                sourceFile = new File(sfile);
                 fileInputStream = new FileInputStream(sourceFile);
                 URL url = new URL(surl);
-                connection = (HttpsURLConnection) url.openConnection();
+                conn = (HttpsURLConnection) url.openConnection();
 
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
-                connection.setUseCaches(false);
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Connection", "Keep-Alive");
-                connection.setRequestProperty("ENCTYPE", "multipart/form-data");
-                connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setUseCaches(false);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
-                dos = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream = new DataOutputStream(conn.getOutputStream());
 
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + source_file_loc + "\"" + lineEnd);
+                dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + sfile + "\"" + lineEnd);
 
-                dos.writeBytes(lineEnd);
+                dataOutputStream.writeBytes(lineEnd);
 
                 // create a buffer of  maximum size
                 bytesAvailable = fileInputStream.available();
@@ -109,7 +109,7 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
 
                 while (bytesRead > 0) {
 
-                    dos.write(buffer, 0, bufferSize);
+                    dataOutputStream.write(buffer, 0, bufferSize);
                     bytesAvailable = fileInputStream.available();
                     bufferSize = Math.min(bytesAvailable, maxBufferSize);
                     bytesRead = fileInputStream.read(buffer, 0, bufferSize);
@@ -117,16 +117,16 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
                 }
 
                 // send multipart form data necesssary after file data...
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                dataOutputStream.writeBytes(lineEnd);
+                dataOutputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
                 // Responses from the server (code and message)
-                serverResponseCode = connection.getResponseCode();
+                serverResponseCode = conn.getResponseCode();
                 if (serverResponseCode != 200) {
-                    return "server returned: " + connection.getResponseCode() + " message: " + connection.getResponseMessage();
+                    return "server returned: " + conn.getResponseCode() + " message: " + conn.getResponseMessage();
                 } else {
                     System.out.print("\n\n\n\n\n\nRESPONSE CODE: "+serverResponseCode);
-                    System.out.println("RESPONSE MESSAGE: "+connection.getResponseMessage());
+                    System.out.println("RESPONSE MESSAGE: "+conn.getResponseMessage());
                 }
 
             } catch (Exception e) {
@@ -134,13 +134,13 @@ public class APIOperations extends AsyncTask<String,Integer,String> {
             } finally {
                 try {
                     fileInputStream.close();
-                    dos.flush();
-                    dos.close();
+                    dataOutputStream.flush();
+                    dataOutputStream.close();
                 } catch (IOException ignored) {
                 }
 
-                if (connection != null)
-                    connection.disconnect();
+                if (conn != null)
+                    conn.disconnect();
             }
             return null;
         }catch(Exception ex) {
