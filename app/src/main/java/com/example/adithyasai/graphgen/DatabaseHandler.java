@@ -23,7 +23,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addCoordinates(String values, String  tablename){
         SQLiteDatabase db=this.getWritableDatabase();
 //        System.out.println(values);
-        db.execSQL("INSERT INTO "+tablename+" values ("+values+")");
+        String st= new String();
+        for(int i=0;i<50;i++)
+        {
+            if(i!=49)
+                st+="x"+(i+1)+" "+", y"+(i+1)+" "+", z"+(i+1)+" , ";
+            else
+                st+="x"+(i+1)+" "+", y"+(i+1)+" "+", z"+(i+1)+" ";
+        }
+        db.execSQL("INSERT INTO "+tablename+"("+st+",act_label) values ("+values+")");
     }
 
     public DatabaseHandler(Context context) {

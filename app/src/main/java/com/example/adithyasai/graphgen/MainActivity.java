@@ -9,6 +9,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     SQLiteDatabase sqldb =null;
     String tableName = new String();
     String lbl="";
-
+    boolean fl2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         public void onClick(View v) {
                     getFormValues(v);
                     flag=false;
+            fl2=true;
             }
         });
         Button stop = (Button) findViewById(R.id.stop);
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 try {
                     flag=false;
                     count=false;
+                    fl2=false;
                 }catch(Exception e)
                 {
 
@@ -252,21 +255,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                               AccelorometerReading ar;
                                 try{
-                                while(true){
-                                    Long tsLong = System.currentTimeMillis()/1000;
-                                    String ts = tsLong.toString();
-                                    double[] acc_reading = new double[150];
-                                    for(int i=0;i<150;i+=3)
-                                    {
-                                        acc_reading[i]=ax;
-                                        acc_reading[i+1]=ay;
-                                        acc_reading[i+2]=az;
-                                        Thread.sleep(100);
-                                    }
-                                    //ar=new AccelorometerReading(ts,ax,ay,az);
-                                    db.addCoordinates(ts+","+Arrays.toString(acc_reading).replace("[","").replace("]","")+","+lbl,tableName);
-                                    addToFile(acc_reading,lbl);
 
+                                while(true){
+                                    if(fl2==true) {
+                                        Long tsLong = System.currentTimeMillis() / 1000;
+                                        String ts = tsLong.toString();
+                                        double[] acc_reading = new double[150];
+                                        for (int i = 0; i < 150; i += 3) {
+                                            acc_reading[i] = ax;
+                                            acc_reading[i + 1] = ay;
+                                            acc_reading[i + 2] = az;
+                                            Thread.sleep(100);
+                                        }
+                                        //ar=new AccelorometerReading(ts,ax,ay,az);
+                                        db.addCoordinates(Arrays.toString(acc_reading).replace("[", "").replace("]", "") + "," + lbl, tableName);
+                                        addToFile(acc_reading, lbl);
+                                    }
                                 }}catch (InterruptedException e){
 
                                 }
@@ -294,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 st+="x"+(i+1)+" float"+", y"+(i+1)+" float"+", z"+(i+1)+" float";
             }
 //        System.out.println(st);
-        sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,"+st+", act_label varchar(10))");
+        sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(id integer primary key autoincrement,"+st+", act_label varchar(10))");
     }
 
     public void uploadDatabase(View view){
@@ -318,8 +322,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         try {
 
             String record=label;
-            File path = context.getFilesDir();
-            File file=new File(path,"training_set.txt");
+//            File path = context.getFilesDir();
+            File path= Environment.getExternalStorageDirectory();
+            File file=new File(path.getAbsolutePath(),"training_set.txt");
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -327,14 +332,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             for(int i=0;i<acc_reading.length;i++){
                 record+=" "+Integer.toString(i+1)+":"+acc_reading[i];
             }
-            System.out.println(record);
-            System.out.println(file.getAbsoluteFile());
+//            System.out.println(record);
+//            System.out.println(file.getAbsoluteFile());
 
             fw = new FileWriter(file.getAbsoluteFile(),true);
             bw = new BufferedWriter(fw);
             bw.write(record);
             bw.write('\n');
-            System.out.println("Done");
 
         } catch (IOException e) {
 
