@@ -22,7 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addCoordinates(String values, String  tablename){
         SQLiteDatabase db=this.getWritableDatabase();
-        System.out.println(values);
+//        System.out.println(values);
         db.execSQL("INSERT INTO "+tablename+" values ("+values+")");
     }
 

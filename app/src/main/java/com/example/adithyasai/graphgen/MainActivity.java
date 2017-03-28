@@ -21,6 +21,10 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 //Using third-party library
 import com.jjoe64.graphview.GraphView;
@@ -261,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     }
                                     //ar=new AccelorometerReading(ts,ax,ay,az);
                                     db.addCoordinates(ts+","+Arrays.toString(acc_reading).replace("[","").replace("]","")+","+lbl,tableName);
+                                    addToFile(acc_reading,lbl);
 
                                 }}catch (InterruptedException e){
 
@@ -273,10 +278,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+
+
     public void createTable(String id, String name,String age,String gender){
 
         sqldb=db.getWritableDatabase();
-        tableName=name+'_'+id+'_'+age+'_'+gender;
+//        tableName=name+'_'+id+'_'+age+'_'+gender;
+        tableName="training_set";
         String st= new String();
         for(int i=0;i<50;i++)
             {
@@ -285,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             else
                 st+="x"+(i+1)+" float"+", y"+(i+1)+" float"+", z"+(i+1)+" float";
             }
-        System.out.println(st);
+//        System.out.println(st);
         sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,"+st+", act_label varchar(10))");
     }
 
@@ -299,6 +307,55 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String[] s=new String[1];
         DownloadOperation dop=new DownloadOperation(this);
         dop.execute(s);
+
+    }
+
+    public void addToFile(double[] acc_reading,String label){
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+
+
+        try {
+
+            String record=label;
+            File path = context.getFilesDir();
+            File file=new File(path,"training_set.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            for(int i=0;i<acc_reading.length;i++){
+                record+=" "+Integer.toString(i+1)+":"+acc_reading[i];
+            }
+            System.out.println(record);
+            System.out.println(file.getAbsoluteFile());
+
+            fw = new FileWriter(file.getAbsoluteFile(),true);
+            bw = new BufferedWriter(fw);
+            bw.write(record);
+            bw.write('\n');
+            System.out.println("Done");
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }finally {
+
+            try {
+
+                if (bw != null)
+                    bw.close();
+
+                if (fw != null)
+                    fw.close();
+
+            } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+            }
+        }
     }
 
 }
