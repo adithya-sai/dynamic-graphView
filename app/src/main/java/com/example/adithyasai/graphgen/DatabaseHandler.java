@@ -12,7 +12,7 @@ import java.util.*;
  */
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION=3;
+    private static final int DATABASE_VERSION=4;
     private static final String DATABASE_NAME="Group28";
     private static final String DATABASE_TABLE="Name_ID_Age_Sex";
     private static final String KEY_ID="timestamp";

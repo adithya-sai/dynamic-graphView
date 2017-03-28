@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     DatabaseHandler db = null;
     SQLiteDatabase sqldb =null;
     String tableName = new String();
+    String lbl="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     public void getFormValues(View v){
         String id=idField.getText().toString();
+        lbl=id;
         String name=patientNameField.getText().toString();
         String age=ageField.getText().toString();
         int selectedRadio=genderField.getCheckedRadioButtonId();
@@ -258,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                         Thread.sleep(100);
                                     }
                                     //ar=new AccelorometerReading(ts,ax,ay,az);
-                                    db.addCoordinates(ts+","+Arrays.toString(acc_reading).replace("[","").replace("]",""),tableName);
+                                    db.addCoordinates(ts+","+Arrays.toString(acc_reading).replace("[","").replace("]","")+","+lbl,tableName);
 
                                 }}catch (InterruptedException e){
 
@@ -284,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 st+="x"+(i+1)+" float"+", y"+(i+1)+" float"+", z"+(i+1)+" float";
             }
         System.out.println(st);
-        sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,"+st+")");
+        sqldb.execSQL("CREATE TABLE IF NOT EXISTS "+tableName+"(timestamp varchar(10) primary key,"+st+", act_label varchar(10))");
     }
 
     public void uploadDatabase(View view){
