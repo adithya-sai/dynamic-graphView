@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 throw new InputMismatchException();
             }
             Integer.parseInt(id);
-            Integer.parseInt(age);
+//            Integer.parseInt(age);
             boolean fl=true;
             try{
                 Integer.parseInt(name.charAt(0)+"");
