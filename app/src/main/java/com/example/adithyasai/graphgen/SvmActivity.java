@@ -196,7 +196,8 @@ public class SvmActivity extends AppCompatActivity {
                 svm_model model = svm.svm_train(prob,param);
             }
 
-            tv.setText(""+accuracy_ans);
+            tv.setText("Cross-validation accuracy: "+accuracy_ans+"\nSVM Type: SVC\nKernel Type: Polynomial\nDegree: 2\nGamma: 0.007\nCache Size: 100");
+
 
         }catch(Exception ex) {
             System.out.println("Catch:"+ex.getMessage());
