@@ -115,5 +115,15 @@
         android:id="@+id/button3"
         android:onClick="downloadDatabase"/>
 
+    <Button
+        android:text="SVM"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button2"
+        android:layout_toEndOf="@+id/button3"
+        android:layout_marginStart="11dp"
+        android:id="@+id/button4"
+        android:onClick="toSvmActivity"/>
+
 </RelativeLayout>
 

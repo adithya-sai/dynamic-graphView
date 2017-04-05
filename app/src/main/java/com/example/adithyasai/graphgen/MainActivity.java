@@ -2,6 +2,7 @@ package com.example.adithyasai.graphgen;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -312,6 +313,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         DownloadOperation dop=new DownloadOperation(this);
         dop.execute(s);
 
+    }
+
+    public void toSvmActivity(View view){
+        Intent intent=new Intent(this,SvmActivity.class);
+        startActivity(intent);
     }
 
     public void addToFile(double[] acc_reading,String label){
