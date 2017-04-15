@@ -18,6 +18,8 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     boolean fl2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context=this;
@@ -75,105 +78,106 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         patientNameField=(EditText) findViewById(R.id.patientName);
         ageField=(EditText) findViewById(R.id.age);
         genderField=(RadioGroup) findViewById(R.id.gender);
-        sqldb=db.getWritableDatabase();
-        for (int i = 0; i < 12; i++) {
-            Random r = new Random();
-            val[i] = r.nextFloat();
-        }
-        for (int i = 0; i < 4; i++) {
-            Random r = new Random();
-            random_val[i] = r.nextFloat();
-        }
-        Button button = (Button) findViewById(R.id.start);
-        button.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-                    getFormValues(v);
-                    flag=false;
-            fl2=true;
-            }
-        });
-        Button stop = (Button) findViewById(R.id.stop);
-        stop.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-                try {
-                    flag=false;
-                    count=false;
-                    fl2=false;
-                }catch(Exception e)
-                {
 
-                }
-                GraphView layout = (GraphView) findViewById(R.id.graph);
-                layout.removeAllSeries();
-            }
-        });
+        sqldb=db.getWritableDatabase();
+//        for (int i = 0; i < 12; i++) {
+//            Random r = new Random();
+//            val[i] = r.nextFloat();
+//        }
+//        for (int i = 0; i < 4; i++) {
+//            Random r = new Random();
+//            random_val[i] = r.nextFloat();
+//        }
+//        Button button = (Button) findViewById(R.id.start);
+//        button.setOnClickListener(new View.OnClickListener() {
+//        public void onClick(View v) {
+//                    getFormValues(v);
+//                    flag=false;
+//            fl2=true;
+//            }
+//        });
+//        Button stop = (Button) findViewById(R.id.stop);
+//        stop.setOnClickListener(new View.OnClickListener() {
+//        public void onClick(View v) {
+//                try {
+//                    flag=false;
+//                    count=false;
+//                    fl2=false;
+//                }catch(Exception e)
+//                {
+//
+//                }
+//                GraphView layout = (GraphView) findViewById(R.id.graph);
+//                layout.removeAllSeries();
+//            }
+//        });
     }
 
-    public void onResume() {
-        super.onResume();
-        final GraphView graph=(GraphView) findViewById(R.id.graph);
-        graph.setTitle("X axis : Timestamp Y axis: Axes of accelerometer");
-        graph.removeAllSeries();
-            t = new Thread(new Runnable() {
-            @Override
-            public void run() {
+//    public void onResume() {
+//        super.onResume();
+//        final GraphView graph=(GraphView) findViewById(R.id.graph);
+//        graph.setTitle("X axis : Timestamp Y axis: Axes of accelerometer");
+//        graph.removeAllSeries();
+//            t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                graph.removeAllSeries();
+//                if(flag==true) {
+//                    String result="";
+//                    if(tableName.isEmpty()==false){
+//                         result=getTop10();
+//                         Toast.makeText(context,result,Toast.LENGTH_LONG).show();
+//                        String[] data = result.split("\n");
+//                        if(data.length==10){
+//                        DataPoint[] dpx = new DataPoint[10];
+//                        DataPoint[] dpy = new DataPoint[10];
+//                        DataPoint[] dpz = new DataPoint[10];
+//                        int ct=0;
+//                        for(int j=9;j>=0;j-- ){
+//                            String i=data[j];
+//                            String[] temp=i.split(" ");
+//                            dpx[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[1]));
+//                            dpy[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[2]));
+//                            dpz[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[3]));
+//                            ct++;
+//                        }
+//
+//                        series = new LineGraphSeries<DataPoint>(dpx);
+//                        series.setColor(Color.BLUE);
+//                        graph.addSeries(series);
+//                        series = new LineGraphSeries<DataPoint>(dpy);
+//                        series.setColor(Color.RED);
+//                        graph.addSeries(series);
+//                        series = new LineGraphSeries<DataPoint>(dpz);
+//                        series.setColor(Color.GREEN);
+//                        graph.addSeries(series);
+//                        graph.getViewport().setXAxisBoundsManual(true);
+//                        Long min=Long.parseLong(data[9].split(" ")[0]);
+//                        Long max=Long.parseLong(data[0].split(" ")[0]);
+//                        graph.getViewport().setMaxX(max);
+//                        graph.getViewport().setMinX(min);
 
-                graph.removeAllSeries();
-                if(flag==true) {
-                    String result="";
-                    if(tableName.isEmpty()==false){
-                         result=getTop10();
-                         //Toast.makeText(context,result,Toast.LENGTH_LONG).show();
-                        String[] data = result.split("\n");
-                        if(data.length==10){
-                        DataPoint[] dpx = new DataPoint[10];
-                        DataPoint[] dpy = new DataPoint[10];
-                        DataPoint[] dpz = new DataPoint[10];
-                        int ct=0;
-                        for(int j=9;j>=0;j-- ){
-                            String i=data[j];
-                            String[] temp=i.split(" ");
-                            dpx[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[1]));
-                            dpy[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[2]));
-                            dpz[ct]=new DataPoint(Long.parseLong(temp[0]),Double.parseDouble(temp[3]));
-                            ct++;
-                        }
-
-                        series = new LineGraphSeries<DataPoint>(dpx);
-                        series.setColor(Color.BLUE);
-                        graph.addSeries(series);
-                        series = new LineGraphSeries<DataPoint>(dpy);
-                        series.setColor(Color.RED);
-                        graph.addSeries(series);
-                        series = new LineGraphSeries<DataPoint>(dpz);
-                        series.setColor(Color.GREEN);
-                        graph.addSeries(series);
-                        graph.getViewport().setXAxisBoundsManual(true);
-                        Long min=Long.parseLong(data[9].split(" ")[0]);
-                        Long max=Long.parseLong(data[0].split(" ")[0]);
-                        graph.getViewport().setMaxX(max);
-                        graph.getViewport().setMinX(min);
-
-                        }}
-                }
-                else if (flag==false){
-                    for(int i=0;i<10;i++){
-                        val[i]=0;
-                    }
-                    graph.removeAllSeries();
-                    graph.getViewport().setXAxisBoundsManual(true);
-                    graph.getViewport().setMaxX(10);
-                    graph.getViewport().setMinX(-10);
-
-                    graph.getViewport().setYAxisBoundsManual(true);
-                    graph.getViewport().setMaxY(10);
-                    graph.getViewport().setMinY(-10);
-                }
-                graphHandler.postDelayed(this, 1000);
-            }
-        });
-        t.start();}
-    //}
+//                        }}
+//                }
+//                else if (flag==false){
+//                    for(int i=0;i<10;i++){
+//                        val[i]=0;
+//                    }
+//                    graph.removeAllSeries();
+//                    graph.getViewport().setXAxisBoundsManual(true);
+//                    graph.getViewport().setMaxX(10);
+//                    graph.getViewport().setMinX(-10);
+//
+//                    graph.getViewport().setYAxisBoundsManual(true);
+//                    graph.getViewport().setMaxY(10);
+//                    graph.getViewport().setMinY(-10);
+//                }
+//                graphHandler.postDelayed(this, 1000);
+//            }
+//        });
+//        t.start();}
+//    }
 
     @Override
     public void onAccuracyChanged(Sensor arg0, int arg1) {
@@ -320,6 +324,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         startActivity(intent);
     }
 
+    public void toWebViewActivity(View view){
+        Intent intent = new Intent(this, WebViewActivity1.class);
+        startActivity(intent);
+    }
+    public void toPerformanceActivity(View view){
+        Intent intent = new Intent(this, PerformanceActivity.class);
+        startActivity(intent);
+    }
     public void addToFile(double[] acc_reading,String label){
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -367,6 +379,5 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         }
     }
-
 }
 

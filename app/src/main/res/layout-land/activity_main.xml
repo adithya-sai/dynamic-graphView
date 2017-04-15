@@ -5,125 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
+
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.adithyasai.graphgen.MainActivity">
 
 
-    <Button
-        android:text="Start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/start" />
 
-    <Button
-        android:text="Stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/start"
-        android:id="@+id/stop" />
-
-    <EditText
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/id"
-        android:layout_alignBaseline="@+id/patientName"
-        android:layout_alignBottom="@+id/patientName"
-        android:layout_toEndOf="@+id/stop"
-        android:inputType="number"
-        android:hint="ID" />
-
-    <EditText
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/patientName"
-        android:hint="Patient Name"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/id" />
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/age"
-        android:layout_marginStart="39dp"
-        android:id="@+id/gender">
-
-        <RadioButton
-            android:text="Female"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/radioButton2"
-            android:layout_weight="1"
-            android:layout_below="@+id/start"
-            android:layout_toEndOf="@+id/radioButton" />
-
-        <RadioButton
-            android:text="Male"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/radioButton"
-            android:layout_weight="1"
-            android:checked="true"
-            android:layout_below="@+id/start"
-            android:layout_alignParentStart="true" />
-
-    </RadioGroup>
-
-    <EditText
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/age"
-        android:hint="Age"
-        android:layout_alignBaseline="@+id/stop"
-        android:layout_alignBottom="@+id/stop"
-        android:layout_toEndOf="@+id/patientName" />
-
-    <com.jjoe64.graphview.GraphView
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph"
-        android:layout_marginTop="42dp"
-        android:layout_below="@+id/gender"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:text="Upload database"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button2"
-        android:layout_below="@+id/gender"
-        android:layout_alignParentStart="true"
-        android:onClick="uploadDatabase"/>
-
-    <Button
-        android:text="Download database"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/button2"
-        android:layout_toEndOf="@+id/button2"
-        android:layout_marginStart="11dp"
-        android:id="@+id/button3"
-        android:onClick="downloadDatabase"/>
 
     <Button
         android:text="SVM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/button2"
-        android:layout_toEndOf="@+id/button3"
         android:layout_marginStart="11dp"
         android:id="@+id/button4"
         android:onClick="toSvmActivity"/>
+
+    <Button
+        android:text="3D Graph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/button4"
+        android:layout_marginStart="11dp"
+        android:id="@+id/web"
+        android:onClick="toWebViewActivity"/>
+
+    <Button
+        android:text="Performance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/performance"
+        android:layout_marginStart="11dp"
+        android:onClick="toPerformanceActivity"
+        android:layout_toEndOf="@id/web"
+         />
 
 </RelativeLayout>
 

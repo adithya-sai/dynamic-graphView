@@ -22,9 +22,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SvmActivity"
-            android:screenOrientation="landscape">
-        </activity>
+        <activity
+            android:name=".SvmActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".WebViewActivity1"
+            android:screenOrientation="landscape" />
+        <activity android:name=".PerformanceActivity"></activity>
     </application>
 
 </manifest>

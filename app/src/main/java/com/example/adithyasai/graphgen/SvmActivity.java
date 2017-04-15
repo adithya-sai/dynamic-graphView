@@ -46,11 +46,10 @@ public class SvmActivity extends AppCompatActivity {
     {
 
         param = new svm_parameter();
-        // default values
         param.svm_type = svm_parameter.C_SVC;
         param.kernel_type = svm_parameter.POLY;
         param.degree = 2;
-        param.gamma = 0.007;	// 1/num_features
+        param.gamma = 0.007;
         param.coef0 = 0;
         param.nu = 0.5;
         param.cache_size = 100;
